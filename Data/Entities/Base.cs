@@ -6,10 +6,10 @@ namespace BlogApp.Data.Entities
     {
         [Key]
         [Required]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
         [DataType(DataType.DateTime)]
-        public DateTime Created { get; set; }
+        public DateTime Created { get; set; } = DateTime.Now;
     }
 }
