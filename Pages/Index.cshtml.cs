@@ -27,7 +27,9 @@ namespace BlogApp.Pages
             {
                 GeneratedPassword = AccountHelper.GeneratePassword(24);
             }
-            
+            var loggedIn = AccountHelper.VerifyUserFromCookie(_context, Request.Cookies["BlogAppAuth"] ?? string.Empty);
+
+            ViewData["LoggedIn"] = loggedIn;
         }
 
         public async Task<IActionResult> OnPost(string email, string password)

@@ -1,4 +1,5 @@
-﻿using BlogApp.Data.Entities;
+﻿using BlogApp.Data;
+using BlogApp.Data.Entities;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -8,12 +9,6 @@ namespace BlogApp.Utility
     {
         public string Hash;
         public string Salt;
-    }
-
-    public struct CookieInfo
-    {
-        public string Email;
-        public EncryptedPair Pair;
     }
 
     public class AccountHelper
@@ -65,6 +60,20 @@ namespace BlogApp.Utility
             return true;
         }
 
+        public static bool ValidateAuthentication(BlogContext context, string email, string password)
+        {
+            if (IsValidEmail(email))
+            {
+                var user = context.Users.Single(x => x.Email == email);
+
+                if (VerifyPassword(password, new EncryptedPair { Hash = user.HashedPassword, Salt = user.Salt }))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static bool IsValidEmail(string email)
         {
             var trimmedEmail = email.Trim();
@@ -84,23 +93,24 @@ namespace BlogApp.Utility
             }
         }
 
-        public static string GenerateCookie(User user)
+        public static string GenerateCookie(string email, string password)
         {
-            return $"{Convert.ToBase64String(Encoding.UTF8.GetBytes(user.Email))}{CookieSeparationSequence}{user.HashedPassword}{CookieSeparationSequence}{user.Salt}";
+            var encodedEmail = Convert.ToBase64String(Encoding.UTF8.GetBytes(email));
+            return $"{encodedEmail}{CookieSeparationSequence}{password}";
         }
 
-        public static CookieInfo BreakUpCookie(string cookie)
+        public static bool VerifyUserFromCookie(BlogContext context, string cookie)
         {
-            var cookieArray = cookie.Split(CookieSeparationSequence);
-            return new CookieInfo
+            if(!string.IsNullOrWhiteSpace(cookie))
             {
-                Email = cookieArray[0],
-                Pair = new EncryptedPair
-                {
-                    Hash = cookieArray[1],
-                    Salt = cookieArray[2]
-                }
-            };
+                var cookieArray = cookie.Split(CookieSeparationSequence);
+                var email = Encoding.UTF8.GetString(Convert.FromBase64String(cookieArray[0]));
+                var encryptedPassword = cookieArray[1];
+
+                var user = context.Users.Single(x => x.Email == email);
+                return string.Compare(encryptedPassword, user.HashedPassword) == 0;
+            }
+            return false;
         }
     }
 }

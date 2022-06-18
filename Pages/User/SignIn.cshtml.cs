@@ -20,24 +20,22 @@ namespace BlogApp.Pages.User
         {
         }
 
-        public void OnPost(string email, string password)
+        public IActionResult OnPost(string email, string password)
         {
             try
             {
-                if(AccountHelper.IsValidEmail(email))
+                if(AccountHelper.ValidateAuthentication(_context, email, password))
                 {
                     var user = _context.Users.Single(x => x.Email == email);
-
-                    if(AccountHelper.VerifyPassword(password, new EncryptedPair { Hash = user.HashedPassword, Salt = user.Salt }))
-                    {
-                        Response.Cookies.Append("BlogAppAuth", AccountHelper.GenerateCookie(user));
-                    }
+                    var newCookie = AccountHelper.GenerateCookie(email, user.HashedPassword);
+                    Response.Cookies.Append("BlogAppAuth", newCookie);
+                    return Redirect("/");
                 }
+                return Page();
             }
             catch (Exception)
             {
-
-                throw;
+                return Page();
             }
         }
     }
