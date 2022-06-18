@@ -11,5 +11,8 @@ namespace BlogApp.Data.Entities
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime Created { get; set; } = DateTime.Now;
+
+        [Required]
+        public Guid CreatedBy { get; set; }
     }
 }

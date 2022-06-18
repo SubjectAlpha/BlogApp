@@ -1,7 +1,9 @@
 ﻿using BlogApp.Data;
+using BlogApp.Data.Entities;
 using BlogApp.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogApp.Pages
 {
@@ -11,7 +13,9 @@ namespace BlogApp.Pages
         private readonly ILogger<IndexModel> _logger;
 
         public bool BloggerExists = true;
+        public bool LoggedIn = false;
         public string GeneratedPassword = string.Empty;
+        public List<Post> Posts { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, BlogContext context)
         {
@@ -21,7 +25,7 @@ namespace BlogApp.Pages
             BloggerExists = _context.Users.Any();
         }
 
-        public void OnGet()
+        public async Task OnGet()
         {
             if(!BloggerExists)
             {
@@ -30,6 +34,9 @@ namespace BlogApp.Pages
             var loggedIn = AccountHelper.VerifyUserFromCookie(_context, Request.Cookies["BlogAppAuth"] ?? string.Empty);
 
             ViewData["LoggedIn"] = loggedIn;
+            LoggedIn = loggedIn;
+
+            this.Posts = await _context.Posts.OrderBy(p => p.Id).ToListAsync();
         }
 
         public async Task<IActionResult> OnPost(string email, string password)

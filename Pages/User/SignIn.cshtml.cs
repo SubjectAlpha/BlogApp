@@ -18,6 +18,8 @@ namespace BlogApp.Pages.User
 
         public void OnGet()
         {
+            Response.Cookies.Append("BlogAppAuth", string.Empty);
+            ViewData["LoggedIn"] = false;
         }
 
         public IActionResult OnPost(string email, string password)

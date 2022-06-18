@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("Default");
+var connectionString = builder.Configuration.GetConnectionString("Default"); //Add this so we can read the connection string from appsettings.json
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddDbContext<BlogContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<BlogContext>(options => options.UseSqlServer(connectionString)); //add this so that we can connect to our database.
 
 var app = builder.Build();
 
@@ -28,5 +28,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapControllers(); //Add this so that we can use our api routes.
 
 app.Run();
