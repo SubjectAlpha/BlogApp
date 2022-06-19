@@ -1,5 +1,6 @@
 ﻿using BlogApp.Data;
 using BlogApp.Data.Entities;
+using BlogApp.Utility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,12 +10,6 @@ namespace BlogApp.Controllers
     [ApiController]
     public class PostController : ControllerBase
     {
-        public struct PostData
-        {
-            public string Title;
-            public string Body;
-        }
-
         private readonly BlogContext _context;
 
         public PostController(BlogContext context)
@@ -35,22 +30,25 @@ namespace BlogApp.Controllers
             }
         }
 
-        [HttpPost("")]
-        public async Task<bool> Create(Guid creatorId, [FromBody] PostData post)
+        [HttpPost("Create")]
+        public async Task<bool> Create([FromBody]KeyValuePair<string, string> post)
         {
             try
             {
-                var newPost = new Post()
+                if(AccountHelper.VerifyUserFromCookie(_context, Request.Cookies["BlogAppAuth"] ?? string.Empty))
                 {
-                    CreatedBy = creatorId,
-                    Title = post.Title,
-                    Body = post.Body,
-                };
+                    var newPost = new Post()
+                    {
+                        Title = post.Key,
+                        Body = post.Value,
+                    };
 
-                _context.Posts.Add(newPost);
-                await _context.SaveChangesAsync();
+                    _context.Posts.Add(newPost);
+                    await _context.SaveChangesAsync();
 
-                return true;
+                    return true;
+                }
+                return false;
             }
             catch (Exception)
             {
@@ -59,17 +57,21 @@ namespace BlogApp.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<bool> Update(Guid id, [FromBody] PostData updatePost)
+        public async Task<bool> Update(Guid id, [FromBody]KeyValuePair<string, string> updatePost)
         {
             try
             {
-                var post = _context.Posts.Single(x => x.Id == id);
+                if (AccountHelper.VerifyUserFromCookie(_context, Request.Cookies["BlogAppAuth"] ?? string.Empty))
+                {
+                    var post = _context.Posts.Single(x => x.Id == id);
 
-                post.Title = updatePost.Title;
-                post.Body = updatePost.Body;
+                    post.Title = updatePost.Key;
+                    post.Body = updatePost.Value;
 
-                await _context.SaveChangesAsync();
-                return true;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
             }
             catch (Exception)
             {
@@ -82,10 +84,14 @@ namespace BlogApp.Controllers
         {
             try
             {
-                var post = _context.Posts.Single(x => x.Id == id);
-                _context.Posts.Remove(post);
-                await _context.SaveChangesAsync();
-                return true;
+                if (AccountHelper.VerifyUserFromCookie(_context, Request.Cookies["BlogAppAuth"] ?? string.Empty))
+                {
+                    var post = _context.Posts.Single(x => x.Id == id);
+                    _context.Posts.Remove(post);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
             }
             catch (Exception)
             {

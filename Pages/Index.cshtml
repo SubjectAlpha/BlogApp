@@ -25,8 +25,43 @@
     </div>
 }
 
+@if(Model.LoggedIn)
+{
+    <div class="bg-light p-4">
+        <input type="hidden" id="postId" value=""/> <!--Use this for when the time to update comes-->
+      <div class="mb-3">
+        <label for="titleInput" class="form-label">Title</label>
+        <input type="text" class="form-control" id="postTitleInput">
+      </div>
+      <div class="mb-3">
+        <label for="bodyInput" class="form-label">Body</label>
+        <textarea class="form-control" id="postBodyInput"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" onclick="CreatePost()">Save Post</button>
+    </div>
+}
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@foreach(var p in Model.Posts)
+{
+    string shortPost = p.Body;
+    if(!String.IsNullOrEmpty(p.Body) && p.Body.Length > 50){
+        shortPost = p.Body.Substring(0,50) + "...";
+    }
+
+    <div class="card mt-3">
+        <div class="card-header">
+            @p.Title - @p.Created.ToShortDateString() @p.Created.ToShortTimeString()
+        </div>
+        <div class="card-body">
+            <p>@shortPost</p>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-link" asp-page="/Post" asp-route-id="@p.Id">View full post</a>
+        @if(Model.LoggedIn)
+        {
+            <button class="btn btn-info" onclick="PopulatePostArea('@p.Id')">Modify</button>
+            <button class="btn btn-danger" onclick="DeletePost('@p.Id')">Delete</button>
+        }
+        </div>
+    </div>
+}
