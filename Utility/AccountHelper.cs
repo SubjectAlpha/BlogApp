@@ -93,24 +93,10 @@ namespace BlogApp.Utility
             }
         }
 
-        public static string GenerateCookie(string email, string password)
+        public static bool IsLoggedIn(HttpContext httpContext)
         {
-            var encodedEmail = Convert.ToBase64String(Encoding.UTF8.GetBytes(email));
-            return $"{encodedEmail}{CookieSeparationSequence}{password}";
-        }
-
-        public static bool VerifyUserFromCookie(BlogContext context, string cookie)
-        {
-            if(!string.IsNullOrWhiteSpace(cookie))
-            {
-                var cookieArray = cookie.Split(CookieSeparationSequence);
-                var email = Encoding.UTF8.GetString(Convert.FromBase64String(cookieArray[0]));
-                var encryptedPassword = cookieArray[1];
-
-                var user = context.Users.Single(x => x.Email == email);
-                return string.Compare(encryptedPassword, user.HashedPassword) == 0;
-            }
-            return false;
+            var sessionLoggedIn = httpContext.Session.GetString("loggedIn");
+            return (!string.IsNullOrEmpty(sessionLoggedIn) && string.Compare(sessionLoggedIn, "true") == 0);
         }
     }
 }

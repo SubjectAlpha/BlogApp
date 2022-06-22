@@ -10,6 +10,7 @@
         <h4 class="alert-heading">A user has not yet been created. Create one now to start posting.</h4>
         <code>Suggested password: @Model.GeneratedPassword</code>
         <form class="row g-3" method="post">
+            @Html.AntiForgeryToken()
           <div class="col-auto">
             <label for="staticEmail2" class="visually-hidden">Email</label>
             <input name="email" type="text" class="form-control" id="staticEmail2" placeholder="Email">
@@ -28,7 +29,7 @@
 @if(Model.LoggedIn)
 {
     <div class="bg-light p-4">
-        <input type="hidden" id="postId" value=""/> <!--Use this for when the time to update comes-->
+        <input type="hidden" id="postId" value=""/> <!--Use this to store the id on the page for use later in javascript-->
       <div class="mb-3">
         <label for="titleInput" class="form-label">Title</label>
         <input type="text" class="form-control" id="postTitleInput">
@@ -44,6 +45,8 @@
 @foreach(var p in Model.Posts)
 {
     string shortPost = p.Body;
+
+    //This code shortens the body if the string is longer than 50 characters.
     if(!String.IsNullOrEmpty(p.Body) && p.Body.Length > 50){
         shortPost = p.Body.Substring(0,50) + "...";
     }
@@ -56,6 +59,7 @@
             <p>@shortPost</p>
         </div>
         <div class="card-footer">
+            <!--Take the user to view the entire post-->
             <a class="btn btn-link" asp-page="/Post" asp-route-id="@p.Id">View full post</a>
         @if(Model.LoggedIn)
         {

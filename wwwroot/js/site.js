@@ -3,7 +3,12 @@
 
 // Write your JavaScript code.
 
-function CreatePost() {
+const xsrfToken = document.cookie
+    .split("; ")
+    .find(row => row.startsWith("XSRF-TOKEN="))
+    .split("=")[1];
+
+async function CreatePost() {
 
     var postId = document.getElementById("postId").value;
     console.log("postid", postId);
@@ -20,37 +25,44 @@ function CreatePost() {
         value: body
     }
 
-    fetch('/api/Post/Create', {
+    let response = await fetch('/api/Post/Create', {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
+            "X-XSRF-TOKEN": xsrfToken
         },
         body: JSON.stringify(post),
-    }).then(response => response.json())
-        .then(_ => {
-            window.location.reload();
-        });
+    })
+
+    response = await response.json();
+
+    if (response) {
+        window.location.reload();
+    }
 }
 
-function PopulatePostArea(postId) {
-    fetch('/api/Post/' + postId, {
+async function PopulatePostArea(postId) {
+    let response = await fetch('/api/Post/' + postId, {
         method: 'GET',
         credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
+            "X-XSRF-TOKEN": xsrfToken
         }
-    }).then(response => response = response.json())
-        .then(data => {
-            document.getElementById("postId").value = data.id;
-            document.getElementById("postTitleInput").value = data.title;
-            document.getElementById("postBodyInput").value = data.body;
-            document.getElementById("postBodyInput").focus();
-        })
-
+    });
+    
+    response = await response.json();
+    
+    if (response) {
+        document.getElementById("postId").value = data.id;
+        document.getElementById("postTitleInput").value = data.title;
+        document.getElementById("postBodyInput").value = data.body;
+        document.getElementById("postBodyInput").focus();
+    }
 }
 
-function UpdatePost() {
+async function UpdatePost() {
     var postId = document.getElementById("postId").value;
     var title = document.getElementById("postTitleInput").value;
     var body = document.getElementById("postBodyInput").value;
@@ -60,25 +72,36 @@ function UpdatePost() {
         value: body
     }
 
-    fetch('/api/Post/' + postId, {
+    let response = await fetch('/api/Post/' + postId, {
         method: 'PATCH',
         credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
+            "X-XSRF-TOKEN": xsrfToken
         },
         body: JSON.stringify(post),
-    }).then(response => response.json())
-        .then(_ => {
-            window.location.reload();
-        });
+    })
+
+    response = await response.json();
+    
+    if (response) {
+        window.location.reload();
+    }
 }
 
-function DeletePost(postId) {
-    fetch('/api/Post/' + postId, {
+async function DeletePost(postId) {
+    let response = fetch('/api/Post/' + postId, {
         method: 'DELETE',
         credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
+            "X-XSRF-TOKEN": xsrfToken
         }
-    }).then(response => { window.location.reload() })
+    })
+
+    response = await response.json();
+    
+    if (response) {
+        window.location.reload();
+    }
 }

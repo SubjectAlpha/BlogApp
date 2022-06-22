@@ -31,12 +31,13 @@ namespace BlogApp.Pages
             {
                 GeneratedPassword = AccountHelper.GeneratePassword(24);
             }
-            var loggedIn = AccountHelper.VerifyUserFromCookie(_context, Request.Cookies["BlogAppAuth"] ?? string.Empty);
+
+            bool loggedIn = AccountHelper.IsLoggedIn(HttpContext);
 
             ViewData["LoggedIn"] = loggedIn;
             LoggedIn = loggedIn;
 
-            this.Posts = await _context.Posts.OrderBy(p => p.Id).ToListAsync();
+            this.Posts = await _context.Posts.OrderBy(p => p.Created).Reverse().ToListAsync();
         }
 
         public async Task<IActionResult> OnPost(string email, string password)

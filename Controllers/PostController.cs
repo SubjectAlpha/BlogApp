@@ -31,11 +31,13 @@ namespace BlogApp.Controllers
         }
 
         [HttpPost("Create")]
+        [ValidateAntiForgeryToken]
         public async Task<bool> Create([FromBody]KeyValuePair<string, string> post)
         {
             try
             {
-                if(AccountHelper.VerifyUserFromCookie(_context, Request.Cookies["BlogAppAuth"] ?? string.Empty))
+                var loggedIn = HttpContext.Session.GetString("loggedIn");
+                if (!string.IsNullOrEmpty(loggedIn) && string.Compare(loggedIn, "true") == 0)
                 {
                     var newPost = new Post()
                     {
@@ -57,11 +59,13 @@ namespace BlogApp.Controllers
         }
 
         [HttpPatch("{id}")]
+        [ValidateAntiForgeryToken]
         public async Task<bool> Update(Guid id, [FromBody]KeyValuePair<string, string> updatePost)
         {
             try
             {
-                if (AccountHelper.VerifyUserFromCookie(_context, Request.Cookies["BlogAppAuth"] ?? string.Empty))
+                var loggedIn = HttpContext.Session.GetString("loggedIn");
+                if (!string.IsNullOrEmpty(loggedIn) && string.Compare(loggedIn, "true") == 0)
                 {
                     var post = _context.Posts.Single(x => x.Id == id);
 
@@ -80,11 +84,13 @@ namespace BlogApp.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ValidateAntiForgeryToken]
         public async Task<bool> Delete(Guid id)
         {
             try
             {
-                if (AccountHelper.VerifyUserFromCookie(_context, Request.Cookies["BlogAppAuth"] ?? string.Empty))
+                var loggedIn = HttpContext.Session.GetString("loggedIn");
+                if (!string.IsNullOrEmpty(loggedIn) && string.Compare(loggedIn, "true") == 0)
                 {
                     var post = _context.Posts.Single(x => x.Id == id);
                     _context.Posts.Remove(post);

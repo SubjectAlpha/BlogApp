@@ -18,7 +18,7 @@ namespace BlogApp.Pages.User
 
         public void OnGet()
         {
-            Response.Cookies.Append("BlogAppAuth", string.Empty);
+            HttpContext.Session.SetString("loggedIn", "false");
             ViewData["LoggedIn"] = false;
         }
 
@@ -28,9 +28,7 @@ namespace BlogApp.Pages.User
             {
                 if(AccountHelper.ValidateAuthentication(_context, email, password))
                 {
-                    var user = _context.Users.Single(x => x.Email == email);
-                    var newCookie = AccountHelper.GenerateCookie(email, user.HashedPassword);
-                    Response.Cookies.Append("BlogAppAuth", newCookie);
+                    HttpContext.Session.SetString("loggedIn", "true");
                     return Redirect("/");
                 }
                 return Page();
