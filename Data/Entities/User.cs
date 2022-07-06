@@ -5,6 +5,9 @@ namespace BlogApp.Data.Entities
 {
     public class User : Base
     {
+        /*
+         * 
+         */
         [Required]
         [EmailAddress]
         public string Email { get; set; }

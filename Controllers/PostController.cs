@@ -30,7 +30,7 @@ namespace BlogApp.Controllers
             }
         }
 
-        [HttpPost("Create")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<bool> Create([FromBody]KeyValuePair<string, string> post)
         {
