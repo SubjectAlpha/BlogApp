@@ -14,7 +14,7 @@ namespace BlogApp.Data.Entities
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.DateTime)] //Set the datatype to make sure that EntityFramework saves the objects properly.
         public DateTime Created { get; set; } = DateTime.Now;
 
         [Required]
