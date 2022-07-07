@@ -1,17 +1,20 @@
-﻿@page
-@model BlogApp.Pages.User.SignInModel
-@{
-}
+﻿@page //Tell the compiler that this is a razor page.
+@model BlogApp.Pages.User.SignInModel //Tell the razor page to use this as a model.
 
+<h3 style="color:red">@Model.ErrorMessage</h3> <!--Display the error message in red-->
+<!--This form will post to the SignIn razor page.-->
 <form method="post" class="bg-light p-4">
-    @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken() <!--This inserts some HTML code that stores the antiforgery token on the page.-->
+    <!--This div will contain the label and input-->
   <div class="mb-3">
     <label for="emailInput" class="form-label">Email address</label>
-    <input name="email" type="email" class="form-control" id="emailInput">
+    <input name="email" type="email" class="form-control" id="emailInput"> 
   </div>
   <div class="mb-3">
     <label for="passwordInput" class="form-label">Password</label>
     <input name="password" type="password" class="form-control" id="passwordInput">
   </div>
+
+  <!--Creating a button in a form with type submit will make it submit the form.-->
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
