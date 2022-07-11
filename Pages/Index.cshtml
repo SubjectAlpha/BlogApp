@@ -10,7 +10,7 @@
         <h4 class="alert-heading">A user has not yet been created. Create one now to start posting.</h4>
         <code>Suggested password: @Model.GeneratedPassword</code>
         <form class="row g-3" method="post">
-            @Html.AntiForgeryToken()
+            @Html.AntiForgeryToken() <!--Have the antiforgery token generated and embedded on to the page for use in this form.-->
           <div class="col-auto">
             <label for="staticEmail2" class="visually-hidden">Email</label>
             <input name="email" type="text" class="form-control" id="staticEmail2" placeholder="Email">
