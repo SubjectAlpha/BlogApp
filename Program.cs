@@ -23,7 +23,7 @@ builder.Services.AddAntiforgery(options => //Implementing antiforgery https://do
     options.FormFieldName = "BlogApp";
     options.HeaderName = "X-XSRF-TOKEN";
     options.SuppressXFrameOptionsHeader = false;
-}); 
+});
 
 var app = builder.Build();
 
@@ -46,19 +46,24 @@ app.UseSession(); //Tell the application to use the session service we setup ear
 
 var antiforgery = app.Services.GetRequiredService<IAntiforgery>();
 
-app.Use((context, next) =>
-{
-    var requestPath = context.Request.Path.Value;
-
-    if (!string.IsNullOrWhiteSpace(requestPath) && requestPath.Equals("/"))
+app.Use(
+    (context, next) =>
     {
-        var tokenSet = antiforgery.GetAndStoreTokens(context);
-        context.Response.Cookies.Append("XSRF-TOKEN", tokenSet.RequestToken!,
-            new CookieOptions { HttpOnly = false });
-    }
+        var requestPath = context.Request.Path.Value;
 
-    return next(context);
-});
+        if (!string.IsNullOrWhiteSpace(requestPath) && requestPath.Equals("/"))
+        {
+            var tokenSet = antiforgery.GetAndStoreTokens(context);
+            context.Response.Cookies.Append(
+                "XSRF-TOKEN",
+                tokenSet.RequestToken!,
+                new CookieOptions { HttpOnly = false }
+            );
+        }
+
+        return next(context);
+    }
+);
 
 app.MapRazorPages();
 app.MapControllers(); //Add this so that we can use our api routes.

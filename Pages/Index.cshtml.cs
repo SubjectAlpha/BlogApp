@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlogApp.Pages
 {
-
     //This is the backend of our razor page. It handles requests similarly to a controller, but can handle requests directly from the page.
     public class IndexModel : PageModel
     {
@@ -31,7 +30,7 @@ namespace BlogApp.Pages
         //OnGet will be called on GET HTTP requests.
         public async Task OnGet()
         {
-            if(!BloggerExists)
+            if (!BloggerExists)
             {
                 //If no blogger exists generate a new 24 character long suggested password.
                 GeneratedPassword = AccountHelper.GeneratePassword(24);
@@ -39,7 +38,7 @@ namespace BlogApp.Pages
 
             //See if the current session is logged in.
             bool loggedIn = AccountHelper.IsLoggedIn(HttpContext);
-            
+
             ViewData["LoggedIn"] = loggedIn; //Store the value in ViewData for use across pages.
             LoggedIn = loggedIn; //Set the LoggedIn value for this page specifically.
 
@@ -67,13 +66,13 @@ namespace BlogApp.Pages
                 //Create a new user
                 new Data.Entities.User().Create(_context, email, password);
 
-                //Save database changes. (This is required after database changes, 
+                //Save database changes. (This is required after database changes,
                 await _context.SaveChangesAsync();
 
                 //Redirect to the homepage.
                 return Redirect("/");
-
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 //Send HTTP 500 error
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);

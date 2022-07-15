@@ -23,7 +23,10 @@ namespace BlogApp.Data.Entities
             try
             {
                 //Make sure that the email supplied is a valid email. If not exit and send a false response.
-                if (!AccountHelper.IsValidEmail(email)) { return false; }
+                if (!AccountHelper.IsValidEmail(email))
+                {
+                    return false;
+                }
 
                 //Encrypt the password!
                 var encryptedPassword = AccountHelper.EncryptPassword(rawPassword);

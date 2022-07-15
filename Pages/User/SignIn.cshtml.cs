@@ -27,7 +27,7 @@ namespace BlogApp.Pages.User
         public IActionResult OnPost(string email, string password)
         {
             //If either parameter is null or an empty string or white space, give an error message and return the page.
-            if(string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
                 ErrorMessage = "Both fields must be filled out";
                 return Page();
@@ -36,7 +36,7 @@ namespace BlogApp.Pages.User
             try
             {
                 //Attempt to authenticate the user, if it fails return the page with an error message.
-                if(AccountHelper.ValidateAuthentication(_context, email, password))
+                if (AccountHelper.ValidateAuthentication(_context, email, password))
                 {
                     //If authentication is sucessful set the session string to true and redirect to the home page.
                     HttpContext.Session.SetString("loggedIn", "true");

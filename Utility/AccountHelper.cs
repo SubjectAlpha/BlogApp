@@ -11,7 +11,9 @@ namespace BlogApp.Utility
         private const string Upper = @"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private const string Digits = @"1234567890";
         private const string SpecialChars = @"~!@#$%^&*()-_=+[{]}\|;"":',<.>/?";
-        private const int SaltSize = 16, HashSize = 24, HashIter = 10000;
+        private const int SaltSize = 16,
+            HashSize = 24,
+            HashIter = 10000;
 
         //Create a struct to hold the values in a named pair
         public struct EncryptedPair
@@ -23,8 +25,7 @@ namespace BlogApp.Utility
         //This method will securely generate a password for the defined character set with no modulo bias.
         public static string GeneratePassword(int requiredLength)
         {
-            var source =
-                $"{Lower}{Upper}{Digits}{SpecialChars}".ToCharArray(); // Load all allowable characters into single array
+            var source = $"{Lower}{Upper}{Digits}{SpecialChars}".ToCharArray(); // Load all allowable characters into single array
             var crypto = new RSACryptoServiceProvider(); //Instantiate the cryptographic service provider.
             var result = new StringBuilder(requiredLength); //This will allow us to create a string easily through the iterations.
             var emptyArr = Array.Empty<byte>(); //Instantiate outside of the loop for increased performance.
@@ -47,12 +48,20 @@ namespace BlogApp.Utility
         {
             var salt = new RSACryptoServiceProvider().Encrypt(new byte[SaltSize], false); //Generate a new salt using the RSA algorithm.
             var hash = new Rfc2898DeriveBytes(password, salt, HashIter).GetBytes(HashSize); //Salt and hash the password.
-            return new EncryptedPair { Hash = Convert.ToBase64String(hash), Salt = Convert.ToBase64String(salt) }; //Return the encrypted pair, the values have also been base64 encoded.
+            return new EncryptedPair
+            {
+                Hash = Convert.ToBase64String(hash),
+                Salt = Convert.ToBase64String(salt)
+            }; //Return the encrypted pair, the values have also been base64 encoded.
         }
-        
+
         public static bool VerifyPassword(string password, EncryptedPair encryptionInfo)
         {
-            var testArray = new Rfc2898DeriveBytes(password, Convert.FromBase64String(encryptionInfo.Salt), HashIter).GetBytes(HashSize); //Unencode the stored hash, and then generate a new hashed password based on the password supplied.
+            var testArray = new Rfc2898DeriveBytes(
+                password,
+                Convert.FromBase64String(encryptionInfo.Salt),
+                HashIter
+            ).GetBytes(HashSize); //Unencode the stored hash, and then generate a new hashed password based on the password supplied.
             var unencodedHash = Convert.FromBase64String(encryptionInfo.Hash);
             for (int i = 0; i < HashSize; i++)
             {
@@ -62,13 +71,22 @@ namespace BlogApp.Utility
             return true;
         }
 
-        public static bool ValidateAuthentication(BlogContext context, string email, string password)
+        public static bool ValidateAuthentication(
+            BlogContext context,
+            string email,
+            string password
+        )
         {
             if (IsValidEmail(email))
             {
                 var user = context.Users.Single(x => x.Email == email);
 
-                if (VerifyPassword(password, new EncryptedPair { Hash = user.HashedPassword, Salt = user.Salt }))
+                if (
+                    VerifyPassword(
+                        password,
+                        new EncryptedPair { Hash = user.HashedPassword, Salt = user.Salt }
+                    )
+                )
                 {
                     return true;
                 }
@@ -79,7 +97,7 @@ namespace BlogApp.Utility
         public static bool IsValidEmail(string email)
         {
             var trimmedEmail = email.Trim(); //Remove whitespace
-            if(trimmedEmail.EndsWith("."))
+            if (trimmedEmail.EndsWith("."))
             {
                 return false;
             }
@@ -99,7 +117,10 @@ namespace BlogApp.Utility
         {
             //Check the session to see if the logged in string is set to true.
             var sessionLoggedIn = httpContext.Session.GetString("loggedIn");
-            return (!string.IsNullOrEmpty(sessionLoggedIn) && string.Compare(sessionLoggedIn, "true") == 0);
+            return (
+                !string.IsNullOrEmpty(sessionLoggedIn)
+                && string.Compare(sessionLoggedIn, "true") == 0
+            );
         }
     }
 }

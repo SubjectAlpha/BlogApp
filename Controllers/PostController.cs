@@ -32,18 +32,14 @@ namespace BlogApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<bool> Create([FromBody]KeyValuePair<string, string> post)
+        public async Task<bool> Create([FromBody] KeyValuePair<string, string> post)
         {
             try
             {
                 var loggedIn = HttpContext.Session.GetString("loggedIn");
                 if (!string.IsNullOrEmpty(loggedIn) && string.Compare(loggedIn, "true") == 0)
                 {
-                    var newPost = new Post()
-                    {
-                        Title = post.Key,
-                        Body = post.Value,
-                    };
+                    var newPost = new Post() { Title = post.Key, Body = post.Value, };
 
                     _context.Posts.Add(newPost);
                     await _context.SaveChangesAsync();
@@ -60,7 +56,7 @@ namespace BlogApp.Controllers
 
         [HttpPatch("{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<bool> Update(Guid id, [FromBody]KeyValuePair<string, string> updatePost)
+        public async Task<bool> Update(Guid id, [FromBody] KeyValuePair<string, string> updatePost)
         {
             try
             {
